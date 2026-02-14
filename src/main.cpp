@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 // all the strings for the input
 char yesno;
@@ -31,6 +32,23 @@ image_name_input:
             std::cout << "please specify working directory:" << std::endl;
             std::cin >> work_dir;
             std::cout << "set " << work_dir << " as working directory" << std::endl;
+            break;
+        default:
+            work_dir_use = 0;
+            std::cout << "no working directory will be used" << std::endl;
+            break;
     }
+    std::cout << "creating dockerfile next to executable" << std::endl;
+
+    // create a dockerfile
+    std::ofstream dockerfile("Dockerfile");
+    dockerfile << "FROM " << image_name << "\n";
+    switch(work_dir_use) {
+        case 0:
+            break;
+        case 1:
+            dockerfile << "WORKDIR " << work_dir << "\n";
+    }
+    dockerfile.close();
     return 0;
 }
