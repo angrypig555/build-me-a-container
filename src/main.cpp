@@ -1,3 +1,8 @@
+/* build-me-a-container Copyright (C) 2026 angrypig555
+   main.cpp
+   This project is licensed under the GPL, see LICENSE for more information.
+*/
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -26,6 +31,11 @@ std::string project_name;
 std::string service_name;
 std::string compose_port;
 std::string network_name;
+std::string volume_name;
+std::string volume_mount;
+std::string environment_name;
+std::string environment_value;
+
 
 int get_term_width() {
     struct winsize w;
@@ -64,6 +74,28 @@ new_service:
     std::cin >> image_name;
     std::cout << service_name << " will be based on " << image_name << std::endl;
     compose_buffer.push_back("    image: " + image_name);
+    seperator();
+    std::cout << "would you like to set any environment variables for this service? [y/n] ";
+    std::cin >> yesno;
+    if (yesno == 'y') {
+        compose_buffer.push_back("    environment:");
+environment_service:
+        std::cout << "what is the name of the environment variable? ";
+        std::cin >> environment_name;
+        std::cout << "what should be the value of " << environment_name << "? ";
+        std::cin >> environment_value;
+        std::cout << "variable " << environment_name << environment_value << " created for " << service_name << std::endl;
+        compose_buffer.push_back("      " + environment_name + ": " + environment_value);
+        std::cout << "would you like to add another environment variable? [y/n]";
+        std::cin >> yesno;
+        switch (yesno) {
+            case 'y':
+                goto environment_service;
+                break;
+            default:
+                break;
+        }
+    }
     seperator();
     std::cout << "would you like to expose any ports for this service? [y/n]";
     std::cin >> yesno;
@@ -106,8 +138,19 @@ network_service:
     }
     seperator();
     std::cout << "would you like to set up volumes for this service? [y/n] ";
+    std::cin >> yesno;
+    if (yesno == 'y') {
+        compose_buffer.push_back("    volumes:");
+volume_service:
+        std::cout << "please name the volume: ";
+        std::cin >> volume_name;
+        std::cout << "please specify where this volume will be mounted inside the container: ";
+        std::cin >> volume_mount;
+        std::cout << volume_name << " will be mounted at " << volume_mount << " for " << service_name << std::endl;
+        compose_buffer.push_back("      - " + volume_name + ":" + volume_mount);
+    }
     seperator();
-    std::cout << "would you like to create another service? [y/n] ";
+    std::cout << "would you like to set up another service? [y/n] ";
     std::cin >> yesno;
     switch (yesno) {
         case 'y':
@@ -116,12 +159,60 @@ network_service:
         default:
             break;
     }
+    seperator();
+    std::cout << "now the services are done, we will have to configure the networks and volumes used" << std::endl;
+    std::cout << "did you use any networks? [y/n] ";
+    std::cin >> yesno;
+    if (yesno == 'y') {
+        compose_buffer.push_back("networks:");
+network_root:
+        std::cout << "please name a network that you used: ";
+        std::cin >> network_name;
+        compose_buffer.push_back("  " + network_name + ":");
+        std::cout << "have you used any other networks? [y/n] ";
+        std::cin >> yesno;
+        switch (yesno) {
+            case 'y':
+                goto network_root;
+                break;
+            default:
+                break;
+        }
+    }
+    seperator();
+    std::cout << "did you use any volumes? [y/n] ";
+    std::cin >> yesno;
+    if (yesno == 'y') {
+        compose_buffer.push_back("volumes:");
+volumes_root:
+        std::cout << "what is the name of the volume? not the path, only the name: ";
+        std::cin >> volume_name;
+        compose_buffer.push_back("  " + volume_name + ":");
+        std::cout << "did you use any other volumes? [y/n] ";
+        std::cin >> yesno;
+        switch (yesno) {
+            case 'y':
+                goto volumes_root;
+                break;
+            default:
+                break;
+        }
+    }
+    seperator();
     std::cout << "generating compose file" << std::endl;
     std::ofstream composefile("compose.yaml");
     composefile << "# Generated using build-me-a-container\n";
     for (int i = 0; i < compose_buffer.size(); i++) {
         composefile << compose_buffer[i] << "\n";
     }
+    seperator();
+    std::cout << "would you like to run this compose file? [y/n] ";
+    std::cin >> yesno;
+    switch (yesno) {
+        case 'y':
+            system("sudo docker compose up");
+    }
+
     return 0;
 }
 
@@ -261,12 +352,19 @@ run_question:
             break;
         default:
             break;
-    }
+        }   
     return 0;
+
 }
 
 // "switcher" for docekrfile or compose
 int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cout << "no arguments given, generating dockerfile" << std::endl;
+        create_dockerfile();
+        return 0;
+    }
+
     std::string argument = argv[1];
     if (argument == "--dockerfile") {
         create_dockerfile();
@@ -274,9 +372,9 @@ int main(int argc, char* argv[]) {
         create_compose();
     } else if (argument == "--help") {
         std::cout << "Available arguments:" << std::endl << "--dockerfile - Generate a dockerfile(default if no arguments)" << std::endl << "--compose - generate a docker compose" << std::endl;
+        std::cout << "build-me-a-container  Copyright (C) 2026  angrypig555" << std::endl << "This program comes with ABSOLUTELY NO WARRANTY; this software is licensed under the GPL" << std::endl;
     } else {
-        std::cout << "no arguments given, generating dockerfile" << std::endl;
-        create_dockerfile();
+        std::cout << "invalid argument, see --help for more info" << std::endl;
     }
     return 0;
 }
