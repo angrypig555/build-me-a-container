@@ -2,6 +2,10 @@
 #include <fstream>
 #include <cstdlib>
 
+#include <sys/ioctl.h>
+#include <stdio.h>
+#include <unistd.h>
+
 // all the strings for the input
 char yesno;
 std::string image_name;
@@ -11,10 +15,26 @@ std::string copy_host_path;
 std::string copy_container_path;
 int copy_in_use;
 
+int get_term_width() {
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    return w.ws_col;
+}
+
+void seperator() {
+    int counter = get_term_width();
+    while (counter != 0) {
+        std::cout << "-";
+        counter -= 1;
+    }
+    std::cout << std::endl;
+}
+
 int main() {
     std::cout << "build-me-a-container 0.1, dockerfile generator" << std::endl;
     std::cout << "WARNING! Before running this program, make sure you are in a seperate, empty directory." << std::endl;
     std::cout << "welcome user, this is an interactive prompt to generate and build a dockerfile" << std::endl;
+    seperator();
     std::cout << "first off, lets start off with the very basics, what image will be the base of this container?" << std::endl;
     std::cout << "e.g alpine" << std::endl;
 image_name_input:
