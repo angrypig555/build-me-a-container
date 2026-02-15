@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <unistd.h>
 
-// all the strings for the input
-char yesno;
-std::string image_name;
+// all the strings for the dockerfile
+char yesno; // used by both
+std::string image_name; // used by both
 std::string work_dir;
 int work_dir_use;
 std::string copy_host_path;
@@ -19,6 +19,12 @@ std::vector<std::string> dockerfile_buffer;
 std::string tag;
 std::string run_command;
 std::string entry_point;
+
+// all the strings for the compose
+std::vector<std::string> compose_buffer;
+std::string project_name;
+std::string service_name;
+std::string compose_port;
 
 int get_term_width() {
     struct winsize w;
@@ -35,7 +41,58 @@ void seperator() {
     std::cout << std::endl;
 }
 
-int main() {
+
+int create_compose() {
+    std::cout << "build-me-a-container, compose generator" << std::endl;
+    std::cout << "WARNING! Before running this program, make sure you are in a seperate, empty directory because the compose will be generated next to where it is running" << std::endl;
+    std::cout << "welcome to the build-me-a-container, set-up like prompt to create a docker compose" << std::endl;
+    seperator();
+    std::cout << "first, what should the name be of this compose project?: ";
+    std::cin >> project_name;
+    std::cout << project_name << " will be the name of this project" << std::endl;
+    seperator();
+    compose_buffer.push_back("name: " + project_name);
+    compose_buffer.push_back("services:");
+new_service:
+    std::cout << "what should the name be of the service?: ";
+    std::cin >> service_name;
+    std::cout << service_name << " will be the name of the service" << std::endl;
+    compose_buffer.push_back("  " + service_name + ":");
+    seperator();
+    std::cout << "what image should this service be based off of? ";
+    std::cin >> image_name;
+    std::cout << service_name << " will be based on " << image_name << std::endl;
+    compose_buffer.push_back("    image: " + image_name);
+    seperator();
+    std::cout << "would you like to expose any ports for this service? [y/n]";
+    std::cin >> yesno;
+    if (yesno == 'y') {
+        compose_buffer.push_back("    ports:");
+compose_port_creation:
+        std::cout << "please enter the ports: ";
+        std::cin >> compose_port;
+        std::cout << compose_port << " will be exposed" << std::endl;
+        compose_buffer.push_back("      - \"" + compose_port + "\"");
+        std::cout << "would you like to expose any more ports? [y/n] ";
+        std::cin >> yesno;
+        switch (yesno) {
+            case 'y':
+                goto compose_port_creation;
+                break;
+            default:
+                break;
+        }
+    }
+    std::cout << "generating compose file" << std::endl;
+    std::ofstream composefile("compose.yaml");
+    composefile << "# Generated using build-me-a-container\n";
+    for (int i = 0; i < compose_buffer.size(); i++) {
+        composefile << compose_buffer[i] << "\n";
+    }
+    return 0;
+}
+
+int create_dockerfile() {
     std::cout << "build-me-a-container 0.1, dockerfile generator" << std::endl;
     std::cout << "WARNING! Before running this program, make sure you are in a seperate, empty directory because the dockerfile will be generated next to where it is running" << std::endl;
     std::cout << "welcome user, this is an interactive prompt to generate and build a dockerfile" << std::endl;
@@ -171,6 +228,22 @@ run_question:
             break;
         default:
             break;
+    }
+    return 0;
+}
+
+// "switcher" for docekrfile or compose
+int main(int argc, char* argv[]) {
+    std::string argument = argv[1];
+    if (argument == "--dockerfile") {
+        create_dockerfile();
+    } else if (argument == "--compose") {
+        create_compose();
+    } else if (argument == "--help") {
+        std::cout << "Available arguments:" << std::endl << "--dockerfile - Generate a dockerfile(default if no arguments)" << std::endl << "--compose - generate a docker compose" << std::endl;
+    } else {
+        std::cout << "no arguments given, generating dockerfile" << std::endl;
+        create_dockerfile();
     }
     return 0;
 }
