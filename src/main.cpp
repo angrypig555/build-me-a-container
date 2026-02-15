@@ -25,6 +25,7 @@ std::vector<std::string> compose_buffer;
 std::string project_name;
 std::string service_name;
 std::string compose_port;
+std::string network_name;
 
 int get_term_width() {
     struct winsize w;
@@ -82,6 +83,38 @@ compose_port_creation:
             default:
                 break;
         }
+    }
+    seperator();
+    std::cout << "would you like to add networks to this service? [y/n] ";
+    std::cin >> yesno;
+    if (yesno == 'y') {
+        compose_buffer.push_back("    networks:");
+network_service:
+        std::cout << "please name the network that this service will use: ";
+        std::cin >> network_name;
+        std::cout << network_name << " will be used as a network for " << service_name << std::endl;
+        compose_buffer.push_back("      - " + network_name);
+        std::cout << "would you like to add another network? [y/n] ";
+        std::cin >> yesno;
+        switch (yesno) {
+            case 'y':
+                goto network_service;
+                break;
+            default:
+                break;
+        }
+    }
+    seperator();
+    std::cout << "would you like to set up volumes for this service? [y/n] ";
+    seperator();
+    std::cout << "would you like to create another service? [y/n] ";
+    std::cin >> yesno;
+    switch (yesno) {
+        case 'y':
+            goto new_service;
+            break;
+        default:
+            break;
     }
     std::cout << "generating compose file" << std::endl;
     std::ofstream composefile("compose.yaml");
