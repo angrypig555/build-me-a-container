@@ -79,7 +79,6 @@ image_name_input:
 copy:
     std::cin >> yesno;
     if (yesno == 'y') {
-            
             std::cout << "please specify path on host: ";
             std::cin >> copy_host_path;
             std::cout << "please specify path on container: ";
@@ -97,7 +96,7 @@ ports:
     if (yesno == 'y') {
         std::cout << "please specify port to expose: ";
         std::cin >> port;
-        dockerfile_buffer.push_back("EXPOSE " + port);
+        dockerfile_buffer.push_back("EXPOSE " + std::to_string(port));
         std::cout << "port " << port << " will be exposed" << std::endl;
         std::cout << "would you like to expose any more ports? [y/n] ";
         goto ports;
@@ -139,17 +138,6 @@ run_question:
     }
     dockerfile.close();
     seperator();
-
-    // Old logic, do not use
-    // dockerfile << "FROM " << image_name << "\n";
-    /*switch(work_dir_use) {
-        case 0:
-            break;
-        case 1:
-            dockerfile << "WORKDIR " << work_dir << "\n";
-    }
-    dockerfile.close();
-    */
     std::cout << "checking for containerisation software..." << std::endl;
     int is_docker = std::system("docker > /dev/null 2>&1");
     int is_podman = std::system("podman > /dev/null 2>&1");
