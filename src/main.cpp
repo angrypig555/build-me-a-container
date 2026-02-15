@@ -217,7 +217,7 @@ volumes_root:
 }
 
 int create_dockerfile() {
-    std::cout << "build-me-a-container 0.1, dockerfile generator" << std::endl;
+    std::cout << "build-me-a-container, dockerfile generator" << std::endl;
     std::cout << "WARNING! Before running this program, make sure you are in a seperate, empty directory because the dockerfile will be generated next to where it is running" << std::endl;
     std::cout << "welcome user, this is an interactive prompt to generate and build a dockerfile" << std::endl;
     seperator();
