@@ -84,9 +84,9 @@ environment_service:
         std::cin >> environment_name;
         std::cout << "what should be the value of " << environment_name << "? ";
         std::cin >> environment_value;
-        std::cout << "variable " << environment_name << environment_value << " created for " << service_name << std::endl;
+        std::cout << "variable " << environment_name << " " << environment_value << " created for " << service_name << std::endl;
         compose_buffer.push_back("      " + environment_name + ": " + environment_value);
-        std::cout << "would you like to add another environment variable? [y/n]";
+        std::cout << "would you like to add another environment variable? [y/n] ";
         std::cin >> yesno;
         switch (yesno) {
             case 'y':
@@ -97,7 +97,7 @@ environment_service:
         }
     }
     seperator();
-    std::cout << "would you like to expose any ports for this service? [y/n]";
+    std::cout << "would you like to expose any ports for this service? [y/n] ";
     std::cin >> yesno;
     if (yesno == 'y') {
         compose_buffer.push_back("    ports:");
@@ -206,13 +206,8 @@ volumes_root:
         composefile << compose_buffer[i] << "\n";
     }
     seperator();
-    std::cout << "would you like to run this compose file? [y/n] ";
-    std::cin >> yesno;
-    switch (yesno) {
-        case 'y':
-            system("sudo docker compose up");
-    }
-
+    std::cout << "compose file succesfully generated and can be run with docker-compose up";
+    seperator();
     return 0;
 }
 

@@ -1,4 +1,4 @@
-% build-me-a-container(1) Version 0.2.0
+% build-me-a-container(1) Version 1.0.0
 % angrypig555
 % February 2026
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="console-application">
+  <id>dev.brny.angrypig555.build-me-a-container</id>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <content_rating type="oars-1.1" />
+  <name>build-me-a-container</name>
+  <pkgname>build-me-a-container</pkgname>
+  <summary>An interactive CLI tool to help create dockerfiles and docker compose files.</summary>
+
+  <description>
+    <p>
+        A dockerfile and docker compose generator with an interactive cli, podman and docker support.
+    </p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+        <caption>An image of a terminal with the software running in compose mode<caption>
+        <image>https://user-cdn.hackclub-assets.com/019c663d-bbb5-7166-887a-a052431cea1a/Screenshot_2026-02-16_11-37-00.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>An image of a terminal with the software running in dockerfile mode<caption>
+      <image>https://user-cdn.hackclub-assets.com/019c663d-f0c0-752a-bcb8-076bcebe0aee/Screenshot_2026-02-16_11-35-31.png</image>
+    </screenshot>
+  </screenshots>
+  <provides>
+    <binary>build-me-a-container</binary>
+    <man>build-me-a-container.1</man>
+  </provides>
+
+  <url type="homepage">https://brny.dev/bmac.html</url>
+  
+  <releases>
+    <release version="1.0.0" date="2026-02-16" />
+  </releases>
+</component>
