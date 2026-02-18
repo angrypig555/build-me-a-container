@@ -29,3 +29,6 @@ You also need either docker or podman to run the generated file.
 
 
 **For more information, see the `docs/build-me-a-container.1.md`**
+
+## 🤖 AI
+Very little AI was used in this project. It was only used for small debugging for small parts of the code or make scripts.
